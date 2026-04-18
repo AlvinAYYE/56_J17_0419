@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>07 讀本機 JSON</title>
+    <script src="./vue.3.5.13.js"></script>
+    <style>
+        body {
+            margin: 0;
+            font-family: "Segoe UI", "Microsoft JhengHei", sans-serif;
+            background: linear-gradient(135deg, #fff5e8, #edf8ff);
+            color: #1e3447;
+        }
+
+        .wrap {
+            max-width: 920px;
+            margin: 42px auto;
+            padding: 22px;
+            display: grid;
+            gap: 18px;
+        }
+
+        .box {
+            background: #ffffff;
+            border-radius: 24px;
+            padding: 24px;
+            box-shadow: 0 18px 44px rgba(30, 52, 71, 0.12);
+        }
+
+        button {
+            padding: 12px 18px;
+            border: 0;
+            border-radius: 14px;
+            background: #355cff;
+            color: #ffffff;
+            cursor: pointer;
+        }
+
+        .msg {
+            margin-top: 16px;
+            padding: 14px 16px;
+            border-radius: 14px;
+            background: #f4f7fb;
+        }
+
+        .error {
+            color: #c43b27;
+        }
+
+        .list {
+            display: grid;
+            gap: 12px;
+            margin-top: 14px;
+        }
+
+        .item {
+            padding: 16px;
+            border-radius: 16px;
+            background: #f8fafc;
+        }
+    </style>
+</head>
+<body>
+    <div id="app" class="wrap">
+        <section class="box">
+            <h1>{{ title }}</h1>
+            <p>{{ text }}</p>
+            <p>請用 `http://localhost/J17_第一次上課/07-fetch-json.html` 開啟。</p>
+            <button @click="loadData">讀取本機 JSON</button>
+            <div class="msg" v-if="status">{{ status }}</div>
+            <div class="msg error" v-if="errorText">{{ errorText }}</div>
+        </section>
+
+        <section class="box">
+            <h2>資料列表</h2>
+            <div class="list">
+                <div v-for="item in list" :key="item.id" class="item">
+                    <strong>{{ item.name }}</strong> / 班級 {{ item.class }} / 分數 {{ item.score }}
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        const { createApp, ref } = Vue
+
+        createApp({
+            setup() {
+                const title = ref('07 讀本機 JSON')
+                const text = ref('先抓最穩定的本機 json，熟悉 fetch 的基本流程。')
+                const status = ref('尚未讀取')
+                const errorText = ref('')
+                const list = ref([])
+
+                function loadData() {
+                    status.value = '讀取中...'
+                    errorText.value = ''
+
+                    fetch('./data/data.json')
+                        .then(function(response) {
+                            if (!response.ok) {
+                                throw new Error('讀取失敗，請檢查路徑')
+                            }
+                            return response.json()
+                        })
+                        .then(function(data) {
+                            list.value = data
+                            status.value = '讀取完成，共 ' + data.length + ' 筆'
+                        })
+                        .catch(function(error) {
+                            status.value = ''
+                            errorText.value = error.message
+                        })
+                }
+
+                return { title, text, status, errorText, list, loadData }
+            }
+        }).mount('#app')
+    </script>
+</body>
+</html>

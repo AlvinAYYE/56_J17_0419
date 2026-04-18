@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>09 綜合練習</title>
+    <script src="./vue.3.5.13.js"></script>
+    <style>
+        body {
+            margin: 0;
+            font-family: "Segoe UI", "Microsoft JhengHei", sans-serif;
+            background: radial-gradient(circle at top, #fff1dd, #eaf6ff 58%, #eefaf0);
+            color: #1f3447;
+        }
+
+        .wrap {
+            max-width: 1080px;
+            margin: 36px auto;
+            padding: 22px;
+            display: grid;
+            gap: 20px;
+        }
+
+        .box {
+            background: rgba(255, 255, 255, 0.92);
+            border-radius: 24px;
+            padding: 24px;
+            box-shadow: 0 18px 44px rgba(31, 52, 71, 0.12);
+            backdrop-filter: blur(6px);
+        }
+
+        .top {
+            display: grid;
+            grid-template-columns: 1.1fr 0.9fr;
+            gap: 18px;
+        }
+
+        .tools {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        input {
+            width: 100%;
+            padding: 13px 15px;
+            border: 2px solid #d9e3ec;
+            border-radius: 15px;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+
+        button {
+            padding: 12px 18px;
+            border: 0;
+            border-radius: 14px;
+            color: #ffffff;
+            cursor: pointer;
+        }
+
+        .blue {
+            background: #3564ff;
+        }
+
+        .orange {
+            background: #ff7a59;
+        }
+
+        .green {
+            background: #2f8d63;
+        }
+
+        .msg {
+            margin-top: 14px;
+            padding: 14px 16px;
+            border-radius: 14px;
+            background: #f3f7fb;
+        }
+
+        .list {
+            display: grid;
+            gap: 12px;
+            margin-top: 18px;
+            position: relative;
+        }
+
+        .card {
+            padding: 18px;
+            border-radius: 18px;
+            background: #f8fbfd;
+            border: 1px solid #e2ebf3;
+        }
+
+        .student-enter-active,
+        .student-leave-active,
+        .student-move {
+            transition: all 0.4s ease;
+        }
+
+        .student-enter-from,
+        .student-leave-to {
+            opacity: 0;
+            transform: translateY(24px);
+        }
+
+        .student-leave-active {
+            position: absolute;
+            width: calc(100% - 48px);
+        }
+
+        @media (max-width: 860px) {
+            .top {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="app" class="wrap">
+        <section class="top">
+            <article class="box">
+                <h1>{{ title }}</h1>
+                <p>{{ text }}</p>
+                <p>這一頁會把 Vue 基礎、動畫、fetch 串在一起。</p>
+                <div class="tools">
+                    <button class="green" @click="loadData">載入資料</button>
+                    <button class="orange" @click="toggleList">切換列表顯示</button>
+                </div>
+                <div class="msg" v-if="status">{{ status }}</div>
+                <div class="msg" v-if="errorText">{{ errorText }}</div>
+            </article>
+
+            <article class="box">
+                <h2>搜尋名字</h2>
+                <input v-model="keyword" @input="filterList" placeholder="輸入名字關鍵字">
+                <p>目前關鍵字：{{ keyword || '尚未輸入' }}</p>
+                <p>符合筆數：{{ showList.length }}</p>
+            </article>
+        </section>
+
+        <section class="box">
+            <h2>學生列表</h2>
+            <transition-group name="student" tag="div" class="list" v-if="isShowList">
+                <div v-for="item in showList" :key="item.id" class="card">
+                    <strong>{{ item.name }}</strong>
+                    <p>班級：{{ item.class }}</p>
+                    <p>分數：{{ item.score }}</p>
+                    <p>評語：{{ item.note }}</p>
+                </div>
+            </transition-group>
+            <p v-else>列表已收起。</p>
+        </section>
+    </div>
+
+    <script>
+        const { createApp, ref } = Vue
+
+        createApp({
+            setup() {
+                const title = ref('09 綜合練習')
+                const text = ref('先抓資料，再做搜尋，最後看列表動畫。')
+                const status = ref('尚未載入資料')
+                const errorText = ref('')
+                const keyword = ref('')
+                const isShowList = ref(true)
+                const allList = ref([])
+                const showList = ref([])
+
+                function loadData() {
+                    status.value = '讀取中...'
+                    errorText.value = ''
+
+                    fetch('./data/data.json')
+                        .then(function(response) {
+                            if (!response.ok) {
+                                throw new Error('找不到資料檔')
+                            }
+                            return response.json()
+                        })
+                        .then(function(data) {
+                            allList.value = data
+                            filterList()
+                            status.value = '讀取完成，可以開始搜尋和看動畫'
+                        })
+                        .catch(function(error) {
+                            status.value = ''
+                            errorText.value = error.message
+                        })
+                }
+
+                function toggleList() {
+                    isShowList.value = !isShowList.value
+                }
+
+                function filterList() {
+                    const word = keyword.value.trim().toLowerCase()
+
+                    if (!word) {
+                        showList.value = allList.value
+                        return
+                    }
+
+                    showList.value = allList.value.filter(function(item) {
+                        return item.name.toLowerCase().includes(word)
+                    })
+                }
+
+                return {
+                    title,
+                    text,
+                    status,
+                    errorText,
+                    keyword,
+                    isShowList,
+                    showList,
+                    filterList,
+                    loadData,
+                    toggleList
+                }
+            }
+        }).mount('#app')
+    </script>
+</body>
+</html>

@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>10 Vue 遊樂場</title>
+    <script src="./vue.3.5.13.js"></script>
+    <style>
+        :root {
+            --blue: #3564ff;
+            --orange: #ff7a59;
+            --green: #2f8d63;
+            --ink: #183448;
+            --soft: #f5f8fc;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: "Segoe UI", "Microsoft JhengHei", sans-serif;
+            color: var(--ink);
+            background:
+                radial-gradient(circle at top left, rgba(255, 197, 150, 0.5), transparent 28%),
+                radial-gradient(circle at top right, rgba(111, 186, 255, 0.4), transparent 30%),
+                linear-gradient(160deg, #fff8ef, #eef7ff 48%, #eefaf3);
+        }
+
+        .shell {
+            min-height: 100vh;
+            display: grid;
+            grid-template-columns: 280px 1fr;
+        }
+
+        .nav {
+            padding: 24px 18px;
+            background: rgba(255, 255, 255, 0.78);
+            border-right: 1px solid rgba(24, 52, 72, 0.08);
+            backdrop-filter: blur(12px);
+        }
+
+        .nav-enter-active,
+        .nav-leave-active {
+            transition: all 0.35s ease;
+        }
+
+        .nav-enter-from,
+        .nav-leave-to {
+            opacity: 0;
+            transform: translateX(-24px);
+        }
+
+        .brand {
+            margin-bottom: 18px;
+            padding: 18px;
+            border-radius: 22px;
+            background: linear-gradient(135deg, #183448, #35617d);
+            color: #ffffff;
+        }
+
+        .brand p,
+        .nav-note {
+            line-height: 1.7;
+        }
+
+        .nav-list {
+            display: grid;
+            gap: 10px;
+            margin-top: 18px;
+        }
+
+        .nav-item {
+            padding: 12px 14px;
+            border-radius: 14px;
+            background: #ffffff;
+        }
+
+        .main {
+            padding: 28px;
+        }
+
+        .topbar {
+            display: flex;
+            justify-content: space-between;
+            gap: 16px;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .title-box h1 {
+            margin: 0 0 8px;
+            font-size: 40px;
+        }
+
+        .title-box p {
+            margin: 0;
+            line-height: 1.8;
+        }
+
+        .button-row,
+        .color-row {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 18px;
+        }
+
+        .panel {
+            grid-column: span 12;
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 26px;
+            padding: 22px;
+            box-shadow: 0 20px 46px rgba(24, 52, 72, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .panel.half {
+            grid-column: span 6;
+        }
+
+        .panel.third {
+            grid-column: span 4;
+        }
+
+        .panel h2,
+        .panel h3 {
+            margin-top: 0;
+        }
+
+        .pill {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 999px;
+            background: #eaf1f8;
+            font-size: 14px;
+        }
+
+        .action-btn {
+            border: 0;
+            border-radius: 14px;
+            padding: 12px 18px;
+            color: #ffffff;
+            cursor: pointer;
+            transition: transform 0.2s ease, opacity 0.2s ease;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            opacity: 0.95;
+        }
+
+        .ghost-btn {
+            border: 1px solid rgba(24, 52, 72, 0.16);
+            border-radius: 14px;
+            padding: 12px 18px;
+            background: #ffffff;
+            color: var(--ink);
+            cursor: pointer;
+        }
+
+        .input,
+        .number-input {
+            width: 100%;
+            padding: 13px 15px;
+            border: 2px solid #dae5ef;
+            border-radius: 16px;
+            font-size: 16px;
+            background: #ffffff;
+        }
+
+        .number-wrap {
+            display: grid;
+            gap: 10px;
+        }
+
+        .status {
+            margin-top: 14px;
+            padding: 14px 16px;
+            border-radius: 16px;
+            background: #f4f7fb;
+            line-height: 1.7;
+        }
+
+        .todo-list,
+        .card-list,
+        .tiny-list {
+            display: grid;
+            gap: 12px;
+            position: relative;
+        }
+
+        .todo-item,
+        .data-card,
+        .tiny-item {
+            border-radius: 18px;
+            background: #f8fbfd;
+            border: 1px solid #e3ebf3;
+            padding: 16px;
+        }
+
+        .todo-item {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .todo-left strong {
+            display: block;
+            margin-bottom: 4px;
+        }
+
+        .tiny-list {
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        }
+
+        .tiny-item {
+            text-align: center;
+            font-weight: 700;
+        }
+
+        .todo-enter-active,
+        .todo-leave-active,
+        .todo-move,
+        .card-enter-active,
+        .card-leave-active,
+        .card-move {
+            transition: all 0.35s ease;
+        }
+
+        .todo-enter-from,
+        .todo-leave-to,
+        .card-enter-from,
+        .card-leave-to {
+            opacity: 0;
+            transform: translateY(18px);
+        }
+
+        .todo-leave-active,
+        .card-leave-active {
+            position: absolute;
+            width: calc(100% - 44px);
+        }
+
+        .carousel {
+            overflow: hidden;
+            position: relative;
+            min-height: 240px;
+        }
+
+        .slide-shell {
+            position: relative;
+            min-height: 240px;
+        }
+
+        .slide {
+            width: 100%;
+            padding: 22px;
+            border-radius: 24px;
+            background: linear-gradient(140deg, #183448, #3b6d8e);
+            color: #ffffff;
+        }
+
+        .slide-enter-active,
+        .slide-leave-active {
+            transition: all 0.45s ease;
+        }
+
+        .slide-enter-from {
+            opacity: 0;
+            transform: translateX(40px);
+        }
+
+        .slide-leave-to {
+            opacity: 0;
+            transform: translateX(-40px);
+        }
+
+        .dots {
+            display: flex;
+            gap: 10px;
+            margin-top: 14px;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 999px;
+            background: #cfd9e2;
+        }
+
+        .dot.active {
+            background: var(--ink);
+        }
+
+        .top-links {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        @media (max-width: 1080px) {
+            .shell {
+                grid-template-columns: 1fr;
+            }
+
+            .panel.half,
+            .panel.third {
+                grid-column: span 12;
+            }
+        }
+
+        @media (max-width: 760px) {
+            .main {
+                padding: 18px;
+            }
+
+            .topbar {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .title-box h1 {
+                font-size: 32px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="app" class="shell">
+        <transition name="nav">
+            <aside v-if="ui.navOpen" class="nav">
+                <div class="brand">
+                    <div class="pill">Vue 遊樂場</div>
+                    <h2>一頁整合練習</h2>
+                    <p>這個頁面把清單、輸入框、動畫、按鈕互動、收合選單、輪播器和 fetch 放在一起。</p>
+                </div>
+                <div class="nav-list">
+                    <div class="nav-item">1. 載入資料後，卡片區和輪播器一起更新</div>
+                    <div class="nav-item">2. 用輸入框新增有動畫的 todo</div>
+                    <div class="nav-item">3. 用數字框改變練習卡數量</div>
+                    <div class="nav-item">4. 用按鈕切換全頁主色</div>
+                    <div class="nav-item">5. 看輪播器的 Vue 動畫切換</div>
+                </div>
+                <p class="nav-note">收起這個選單時，請注意它不是只消失，而是走 Vue 的進出場動畫。</p>
+            </aside>
+        </transition>
+
+        <main class="main">
+            <section class="topbar">
+                <div class="title-box">
+                    <div class="pill">10-playground.html</div>
+                    <h1>{{ title }}</h1>
+                    <p>{{ text }}</p>
+                </div>
+                <div class="top-links">
+                    <button class="ghost-btn" @click="toggleNav">切換 NAV 選單</button>
+                    <button class="action-btn" :style="mainBtnStyle" @click="loadData">用 fetch 載入資料</button>
+                </div>
+            </section>
+
+            <section class="grid">
+                <article class="panel half">
+                    <h2>按鈕顏色控制區</h2>
+                    <p>下面三個按鈕會改變整頁主要互動按鈕的顏色，輪播器控制鈕也會一起跟著變。</p>
+                    <div class="color-row">
+                        <button class="action-btn" :style="makeColorStyle('#3564ff')" @click="setTheme('blue')">藍色主題</button>
+                        <button class="action-btn" :style="makeColorStyle('#ff7a59')" @click="setTheme('orange')">橘色主題</button>
+                        <button class="action-btn" :style="makeColorStyle('#2f8d63')" @click="setTheme('green')">綠色主題</button>
+                    </div>
+                    <div class="status">目前主色：{{ ui.themeName }}。這裡是最直接的「按鈕改變按鈕顏色」範例。</div>
+                </article>
+
+                <article class="panel half">
+                    <h2>可變化長度的 List</h2>
+                    <p>輸入想要顯示幾張練習卡，畫面會馬上重新生出對應數量的卡片。</p>
+                    <div class="number-wrap">
+                        <input class="number-input" type="number" min="1" max="12" v-model="cardCount" @input="buildTinyList">
+                        <div class="tiny-list">
+                            <div v-for="item in tinyList" :key="item.id" class="tiny-item">
+                                {{ item.label }}
+                            </div>
+                        </div>
+                    </div>
+                </article>
+
+                <article class="panel half">
+                    <h2>有動畫的 Todo List</h2>
+                    <p>在輸入框輸入內容後按新增，清單會用 `transition-group` 做進場動畫，刪除時也會有離場動畫。</p>
+                    <div class="button-row">
+                        <input class="input" v-model="todoInput" @keyup.enter="addTodo" placeholder="輸入一個待辦，例如：補上分數欄位">
+                        <button class="action-btn" :style="mainBtnStyle" @click="addTodo">新增 Todo</button>
+                    </div>
+                    <transition-group name="todo" tag="div" class="todo-list">
+                        <div v-for="item in todoList" :key="item.id" class="todo-item">
+                            <div class="todo-left">
+                                <strong>{{ item.title }}</strong>
+                                <span>由 input 寫進陣列，然後用 `v-for` 畫出來</span>
+                            </div>
+                            <button class="ghost-btn" @click="removeTodo(item.id)">完成</button>
+                        </div>
+                    </transition-group>
+                </article>
+
+                <article class="panel half">
+                    <h2>輪播器 + Vue 動畫</h2>
+                    <p>輪播器的內容會吃 `fetch` 回來的資料。切換上一張和下一張時，會看到 Vue 的進出場動畫。</p>
+                    <div class="button-row">
+                        <button class="action-btn" :style="mainBtnStyle" @click="prevSlide">上一張</button>
+                        <button class="action-btn" :style="mainBtnStyle" @click="nextSlide">下一張</button>
+                    </div>
+                    <div class="carousel">
+                        <div class="slide-shell">
+                            <transition name="slide" mode="out-in">
+                                <section class="slide" :key="currentSlide.id">
+                                    <div class="pill">{{ currentSlide.class }}</div>
+                                    <h3>{{ currentSlide.name }}</h3>
+                                    <p>分數：{{ currentSlide.score }}</p>
+                                    <p>{{ currentSlide.note }}</p>
+                                </section>
+                            </transition>
+                        </div>
+                    </div>
+                    <div class="dots">
+                        <span v-for="(item, index) in slideList" :key="item.id" class="dot" :class="{ active: index === ui.slideIndex }"></span>
+                    </div>
+                </article>
+
+                <article class="panel third">
+                    <h2>通過 Input 改變陣列</h2>
+                    <p>這裡不是只顯示輸入文字，而是真的把資料 push 進陣列。</p>
+                    <div class="status">
+                        目前 todo 筆數：{{ todoList.length }}<br>
+                        最後輸入內容：{{ todoInput || '尚未輸入' }}
+                    </div>
+                </article>
+
+                <article class="panel third">
+                    <h2>fetch 資料區</h2>
+                    <p>按上方 `用 fetch 載入資料` 後，下面卡片區和輪播器會一起更新。</p>
+                    <div class="status">{{ ui.status }}</div>
+                </article>
+
+                <article class="panel third">
+                    <h2>收合 NAV 說明</h2>
+                    <p>左邊 NAV 是用 `v-if` 配合 `transition` 做收合，不是單純改 `display: none`。</p>
+                    <div class="status">NAV 狀態：{{ ui.navOpen ? '開啟中' : '已收起' }}</div>
+                </article>
+
+                <article class="panel">
+                    <h2>fetch 後的卡片列表</h2>
+                    <p>這個清單和輪播器用的是同一份資料，所以能明顯看到「一份陣列，兩個區塊一起使用」的效果。</p>
+                    <transition-group name="card" tag="div" class="card-list">
+                        <div v-for="item in dataList" :key="item.id" class="data-card">
+                            <strong>{{ item.name }}</strong>
+                            <p>班級：{{ item.class }}</p>
+                            <p>分數：{{ item.score }}</p>
+                            <p>說明：{{ item.note }}</p>
+                        </div>
+                    </transition-group>
+                </article>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        const { createApp, ref, reactive } = Vue
+
+        createApp({
+            setup() {
+                const title = ref('Vue 技術整合遊樂場')
+                const text = ref('在一個畫面裡同時練資料、事件、清單、動畫、輪播器、收合選單和 fetch。')
+                const todoInput = ref('')
+                const cardCount = ref(6)
+                const todoId = ref(4)
+                const todoList = ref([
+                    { id: 1, title: '先載入資料' },
+                    { id: 2, title: '再切換主題色' },
+                    { id: 3, title: '最後測試輪播器' }
+                ])
+                const tinyList = ref([])
+                const dataList = ref([
+                    { id: 1, name: 'Demo', class: 'Start', score: 0, note: '按上方按鈕載入正式資料' }
+                ])
+                const slideList = ref([
+                    { id: 1, name: '尚未載入', class: 'Wait', score: '-', note: '請先使用 fetch 載入資料' }
+                ])
+                const currentSlide = ref(slideList.value[0])
+                const mainBtnStyle = ref({ background: '#3564ff' })
+                const ui = reactive({
+                    navOpen: true,
+                    theme: '#3564ff',
+                    themeName: '藍色',
+                    slideIndex: 0,
+                    status: '尚未載入資料'
+                })
+
+                function syncMainBtnStyle() {
+                    mainBtnStyle.value = { background: ui.theme }
+                }
+
+                function syncCurrentSlide() {
+                    currentSlide.value = slideList.value[ui.slideIndex] || {
+                        id: 0,
+                        name: '沒有資料',
+                        class: 'None',
+                        score: '-',
+                        note: '請先讀取資料'
+                    }
+                }
+
+                function buildTinyList() {
+                    let total = Number(cardCount.value)
+
+                    if (!total || total < 1) {
+                        total = 1
+                    }
+
+                    if (total > 12) {
+                        total = 12
+                    }
+
+                    cardCount.value = total
+                    tinyList.value = []
+
+                    for (let i = 1; i <= total; i++) {
+                        tinyList.value.push({
+                            id: i,
+                            label: '卡片 ' + i
+                        })
+                    }
+                }
+
+                function addTodo() {
+                    const textValue = todoInput.value.trim()
+
+                    if (!textValue) {
+                        return
+                    }
+
+                    todoList.value.unshift({
+                        id: todoId.value,
+                        title: textValue
+                    })
+                    todoId.value++
+                    todoInput.value = ''
+                }
+
+                function removeTodo(id) {
+                    todoList.value = todoList.value.filter(function(item) {
+                        return item.id !== id
+                    })
+                }
+
+                function setTheme(name) {
+                    if (name === 'orange') {
+                        ui.theme = '#ff7a59'
+                        ui.themeName = '橘色'
+                        syncMainBtnStyle()
+                        return
+                    }
+
+                    if (name === 'green') {
+                        ui.theme = '#2f8d63'
+                        ui.themeName = '綠色'
+                        syncMainBtnStyle()
+                        return
+                    }
+
+                    ui.theme = '#3564ff'
+                    ui.themeName = '藍色'
+                    syncMainBtnStyle()
+                }
+
+                function makeColorStyle(color) {
+                    return { background: color }
+                }
+
+                function toggleNav() {
+                    ui.navOpen = !ui.navOpen
+                }
+
+                function loadData() {
+                    ui.status = '讀取中...'
+
+                    fetch('./data/data.json')
+                        .then(function(response) {
+                            if (!response.ok) {
+                                throw new Error('資料讀取失敗')
+                            }
+
+                            return response.json()
+                        })
+                        .then(function(data) {
+                            dataList.value = data
+                            slideList.value = data
+                            ui.slideIndex = 0
+                            ui.status = '資料已載入，卡片區和輪播器都同步更新'
+                            syncCurrentSlide()
+                        })
+                        .catch(function(error) {
+                            ui.status = error.message
+                        })
+                }
+
+                function nextSlide() {
+                    if (slideList.value.length === 0) {
+                        return
+                    }
+
+                    ui.slideIndex++
+
+                    if (ui.slideIndex >= slideList.value.length) {
+                        ui.slideIndex = 0
+                    }
+
+                    syncCurrentSlide()
+                }
+
+                function prevSlide() {
+                    if (slideList.value.length === 0) {
+                        return
+                    }
+
+                    ui.slideIndex--
+
+                    if (ui.slideIndex < 0) {
+                        ui.slideIndex = slideList.value.length - 1
+                    }
+
+                    syncCurrentSlide()
+                }
+
+                buildTinyList()
+                syncMainBtnStyle()
+                syncCurrentSlide()
+
+                return {
+                    title,
+                    text,
+                    ui,
+                    todoInput,
+                    cardCount,
+                    todoList,
+                    tinyList,
+                    dataList,
+                    slideList,
+                    currentSlide,
+                    mainBtnStyle,
+                    buildTinyList,
+                    addTodo,
+                    removeTodo,
+                    setTheme,
+                    makeColorStyle,
+                    toggleNav,
+                    loadData,
+                    nextSlide,
+                    prevSlide
+                }
+            }
+        }).mount('#app')
+    </script>
+</body>
+</html>

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>08 讀本機 PHP</title>
+    <script src="./vue.3.5.13.js"></script>
+    <style>
+        body {
+            margin: 0;
+            font-family: "Segoe UI", "Microsoft JhengHei", sans-serif;
+            background: linear-gradient(135deg, #eef8ff, #fff7eb);
+            color: #1c3245;
+        }
+
+        .wrap {
+            max-width: 920px;
+            margin: 42px auto;
+            padding: 22px;
+            display: grid;
+            gap: 18px;
+        }
+
+        .box {
+            background: #ffffff;
+            border-radius: 24px;
+            padding: 24px;
+            box-shadow: 0 18px 44px rgba(28, 50, 69, 0.12);
+        }
+
+        button {
+            padding: 12px 18px;
+            border: 0;
+            border-radius: 14px;
+            background: #2f8d63;
+            color: #ffffff;
+            cursor: pointer;
+        }
+
+        .msg {
+            margin-top: 16px;
+            padding: 14px 16px;
+            border-radius: 14px;
+            background: #f3f7fb;
+        }
+
+        .error {
+            color: #c1442d;
+        }
+
+        .item {
+            margin-top: 14px;
+            padding: 16px;
+            border-radius: 16px;
+            background: #f7fafc;
+        }
+    </style>
+</head>
+<body>
+    <div id="app" class="wrap">
+        <section class="box">
+            <h1>{{ title }}</h1>
+            <p>{{ text }}</p>
+            <p>請用 `http://localhost/J17_第一次上課/08-fetch-php.html` 開啟。</p>
+            <button @click="loadData">讀取 PHP 回傳資料</button>
+            <div class="msg" v-if="status">{{ status }}</div>
+            <div class="msg error" v-if="errorText">{{ errorText }}</div>
+        </section>
+
+        <section class="box">
+            <h2>回傳內容</h2>
+            <div class="item" v-for="item in list" :key="item.id">
+                {{ item.name }} / 班級 {{ item.class }} / 分數 {{ item.score }}
+            </div>
+        </section>
+    </div>
+
+    <script>
+        const { createApp, ref } = Vue
+
+        createApp({
+            setup() {
+                const title = ref('08 讀本機 PHP')
+                const text = ref('這一頁把 fetch 的目標改成 PHP，但前端流程幾乎一樣。')
+                const status = ref('尚未讀取')
+                const errorText = ref('')
+                const list = ref([])
+
+                function loadData() {
+                    status.value = '讀取中...'
+                    errorText.value = ''
+
+                    fetch('./api/get_data.php')
+                        .then(function(response) {
+                            if (!response.ok) {
+                                throw new Error('PHP 回傳失敗')
+                            }
+                            return response.json()
+                        })
+                        .then(function(data) {
+                            list.value = data.list
+                            status.value = data.msg + '，共 ' + data.list.length + ' 筆'
+                        })
+                        .catch(function(error) {
+                            status.value = ''
+                            errorText.value = error.message
+                        })
+                }
+
+                return { title, text, status, errorText, list, loadData }
+            }
+        }).mount('#app')
+    </script>
+</body>
+</html>

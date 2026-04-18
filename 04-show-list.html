@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>04 條件與清單</title>
+    <script src="./vue.3.5.13.js"></script>
+    <style>
+        body {
+            margin: 0;
+            font-family: "Segoe UI", "Microsoft JhengHei", sans-serif;
+            background: linear-gradient(135deg, #f0f7ff, #fff4eb);
+            color: #1f3447;
+        }
+
+        .wrap {
+            max-width: 900px;
+            margin: 44px auto;
+            padding: 24px;
+            display: grid;
+            gap: 18px;
+        }
+
+        .box {
+            background: #ffffff;
+            border-radius: 22px;
+            padding: 24px;
+            box-shadow: 0 18px 44px rgba(31, 52, 71, 0.12);
+        }
+
+        .btn-row {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 16px;
+        }
+
+        button {
+            padding: 11px 16px;
+            border: 0;
+            border-radius: 14px;
+            background: #3d69ff;
+            color: #ffffff;
+            cursor: pointer;
+        }
+
+        .tips {
+            padding: 16px;
+            border-radius: 16px;
+            background: #edf7ee;
+        }
+
+        ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+
+        li {
+            margin: 8px 0;
+        }
+    </style>
+</head>
+<body>
+    <div id="app" class="wrap">
+        <section class="box">
+            <h1>{{ title }}</h1>
+            <p>{{ text }}</p>
+            <div class="btn-row">
+                <button @click="toggleIf">切換 v-if 區塊</button>
+                <button @click="toggleShow">切換 v-show 區塊</button>
+            </div>
+            <div v-if="isIfOpen" class="tips">這一塊是 v-if，會真的加入和移除。</div>
+            <div v-show="isShowOpen" class="tips">這一塊是 v-show，元素還在，只是切換顯示。</div>
+        </section>
+
+        <section class="box">
+            <h2>學生清單</h2>
+            <button @click="addItem">新增一筆資料</button>
+            <ul>
+                <li v-for="item in list" :key="item.id">
+                    {{ item.name }} - 分數 {{ item.score }}
+                </li>
+            </ul>
+        </section>
+    </div>
+
+    <script>
+        const { createApp, ref } = Vue
+
+        createApp({
+            setup() {
+                const title = ref('04 條件與清單')
+                const text = ref('這一頁把 v-if、v-show、v-for 放在一起練。')
+                const isIfOpen = ref(true)
+                const isShowOpen = ref(true)
+                const nextId = ref(4)
+                const list = ref([
+                    { id: 1, name: 'Amy', score: 95 },
+                    { id: 2, name: 'Ben', score: 88 },
+                    { id: 3, name: 'Cody', score: 92 }
+                ])
+
+                function toggleIf() {
+                    isIfOpen.value = !isIfOpen.value
+                }
+
+                function toggleShow() {
+                    isShowOpen.value = !isShowOpen.value
+                }
+
+                function addItem() {
+                    list.value.push({
+                        id: nextId.value,
+                        name: 'New ' + nextId.value,
+                        score: 80 + nextId.value
+                    })
+                    nextId.value++
+                }
+
+                return {
+                    title,
+                    text,
+                    isIfOpen,
+                    isShowOpen,
+                    list,
+                    toggleIf,
+                    toggleShow,
+                    addItem
+                }
+            }
+        }).mount('#app')
+    </script>
+</body>
+</html>

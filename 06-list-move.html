@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>06 列表動畫</title>
+    <script src="./vue.3.5.13.js"></script>
+    <style>
+        body {
+            margin: 0;
+            font-family: "Segoe UI", "Microsoft JhengHei", sans-serif;
+            background: linear-gradient(135deg, #eefaf0, #eef4ff);
+            color: #213547;
+        }
+
+        .box {
+            max-width: 840px;
+            margin: 48px auto;
+            padding: 28px;
+            background: #ffffff;
+            border-radius: 24px;
+            box-shadow: 0 18px 44px rgba(33, 53, 71, 0.12);
+        }
+
+        .btn-row {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 12px 18px;
+            border: 0;
+            border-radius: 14px;
+            color: #ffffff;
+            cursor: pointer;
+        }
+
+        .add {
+            background: #2e8b57;
+        }
+
+        .remove {
+            background: #ff7a59;
+        }
+
+        .list {
+            margin-top: 20px;
+            display: grid;
+            gap: 12px;
+            position: relative;
+        }
+
+        .item {
+            padding: 16px 18px;
+            border-radius: 16px;
+            background: #f3f7fb;
+        }
+
+        .list-move,
+        .list-enter-active,
+        .list-leave-active {
+            transition: all 0.4s ease;
+        }
+
+        .list-enter-from,
+        .list-leave-to {
+            opacity: 0;
+            transform: translateX(30px);
+        }
+
+        .list-leave-active {
+            position: absolute;
+            width: calc(100% - 56px);
+        }
+    </style>
+</head>
+<body>
+    <div id="app" class="box">
+        <h1>{{ title }}</h1>
+        <p>{{ text }}</p>
+        <div class="btn-row">
+            <button class="add" @click="addItem">新增一筆</button>
+            <button class="remove" @click="removeItem">刪掉最後一筆</button>
+        </div>
+        <transition-group name="list" tag="div" class="list">
+            <div v-for="item in list" :key="item.id" class="item">
+                {{ item.name }} - {{ item.note }}
+            </div>
+        </transition-group>
+    </div>
+
+    <script>
+        const { createApp, ref } = Vue
+
+        createApp({
+            setup() {
+                const title = ref('06 列表動畫')
+                const text = ref('列表動畫最重要的是每一筆都要有穩定的 key。')
+                const nextId = ref(4)
+                const list = ref([
+                    { id: 1, name: 'Amy', note: '先完成畫面' },
+                    { id: 2, name: 'Ben', note: '再補資料' },
+                    { id: 3, name: 'Cody', note: '最後加動畫' }
+                ])
+
+                function addItem() {
+                    list.value.unshift({
+                        id: nextId.value,
+                        name: 'User ' + nextId.value,
+                        note: '這是新加入的資料'
+                    })
+                    nextId.value++
+                }
+
+                function removeItem() {
+                    if (list.value.length > 0) {
+                        list.value.pop()
+                    }
+                }
+
+                return { title, text, list, addItem, removeItem }
+            }
+        }).mount('#app')
+    </script>
+</body>
+</html>

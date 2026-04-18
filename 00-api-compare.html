@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>API 對比頁</title>
+    <script src="./vue.3.5.13.js"></script>
+    <style>
+        body {
+            margin: 0;
+            font-family: "Segoe UI", "Microsoft JhengHei", sans-serif;
+            background: linear-gradient(160deg, #eef7f2, #fff7e8);
+            color: #213547;
+        }
+
+        .wrap {
+            max-width: 1180px;
+            margin: 36px auto;
+            padding: 20px;
+        }
+
+        .top-box,
+        .grid-item {
+            background: #ffffff;
+            border-radius: 24px;
+            box-shadow: 0 18px 45px rgba(33, 53, 71, 0.12);
+        }
+
+        .top-box {
+            padding: 28px;
+            margin-bottom: 24px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 24px;
+        }
+
+        .grid-item {
+            padding: 24px;
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 999px;
+            background: #213547;
+            color: #ffffff;
+            font-size: 14px;
+        }
+
+        .warn {
+            display: inline-block;
+            margin-top: 10px;
+            padding: 8px 12px;
+            border-radius: 12px;
+            background: #ffe8b8;
+        }
+
+        .demo {
+            margin: 18px 0;
+            padding: 18px;
+            border-radius: 18px;
+            background: #f6f8fb;
+        }
+
+        button {
+            padding: 10px 16px;
+            border: 0;
+            border-radius: 12px;
+            background: #ff7a59;
+            color: #ffffff;
+            cursor: pointer;
+        }
+
+        pre {
+            margin: 0;
+            padding: 16px;
+            border-radius: 16px;
+            overflow: auto;
+            background: #15212d;
+            color: #edf4ff;
+            line-height: 1.6;
+            font-size: 14px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 14px;
+        }
+
+        th,
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #d8e2ea;
+            text-align: left;
+        }
+    </style>
+</head>
+<body>
+    <div class="wrap">
+        <section class="top-box">
+            <span class="tag">快速看懂兩種 API</span>
+            <h1>同一個功能，兩種寫法</h1>
+            <p>這一頁只做對比，不當正式主線。比賽實作請優先看組合式 API。</p>
+            <span class="warn">對比重點：資料放哪裡、方法放哪裡、怎麼回傳、哪裡會看到 this。</span>
+            <table>
+                <thead>
+                    <tr>
+                        <th>比較項目</th>
+                        <th>選項式 API</th>
+                        <th>組合式 API</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>資料</td>
+                        <td>`data()` 裡 return</td>
+                        <td>`setup()` 裡用 `ref()`</td>
+                    </tr>
+                    <tr>
+                        <td>方法</td>
+                        <td>`methods`</td>
+                        <td>`setup()` 裡寫 function</td>
+                    </tr>
+                    <tr>
+                        <td>畫面拿資料</td>
+                        <td>Vue 自動整理</td>
+                        <td>靠 `return` 交出去</td>
+                    </tr>
+                    <tr>
+                        <td>`this`</td>
+                        <td>常見</td>
+                        <td>通常不用</td>
+                    </tr>
+                </tbody>
+            </table>
+        </section>
+
+        <section class="grid">
+            <article class="grid-item">
+                <h2>選項式 API</h2>
+                <div id="app-option" class="demo">
+                    <h3>{{ msg }}</h3>
+                    <button @click="changeMsg">改字</button>
+                </div>
+                <pre><code>Vue.createApp({
+  data() {
+    return {
+      msg: '早安，這是選項式 API'
+    }
+  },
+  methods: {
+    changeMsg() {
+      this.msg = '這裡會用到 this'
+    }
+  }
+}).mount('#app-option')</code></pre>
+            </article>
+
+            <article class="grid-item">
+                <h2>組合式 API</h2>
+                <div id="app-setup" class="demo">
+                    <h3>{{ msg }}</h3>
+                    <button @click="changeMsg">改字</button>
+                </div>
+                <pre><code>const { createApp, ref } = Vue
+
+createApp({
+  setup() {
+    const msg = ref('早安，這是組合式 API')
+
+    function changeMsg() {
+      msg.value = '這裡直接改 ref'
+    }
+
+    return { msg, changeMsg }
+  }
+}).mount('#app-setup')</code></pre>
+            </article>
+        </section>
+    </div>
+
+    <script>
+        const { createApp, ref } = Vue
+
+        createApp({
+            data() {
+                return {
+                    msg: '早安，這是選項式 API'
+                }
+            },
+            methods: {
+                changeMsg() {
+                    this.msg = '這裡會用到 this'
+                }
+            }
+        }).mount('#app-option')
+
+        createApp({
+            setup() {
+                const msg = ref('早安，這是組合式 API')
+
+                function changeMsg() {
+                    msg.value = '這裡直接改 ref'
+                }
+
+                return { msg, changeMsg }
+            }
+        }).mount('#app-setup')
+    </script>
+</body>
+</html>

@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EZ Vue 起步</title>
+    <script src="./vue.3.5.13.js"></script>
+    <style>
+        body {
+            margin: 0;
+            font-family: "Segoe UI", "Microsoft JhengHei", sans-serif;
+            background: linear-gradient(135deg, #f7efe4, #dff1ff);
+            color: #163047;
+        }
+
+        .wrap {
+            max-width: 760px;
+            margin: 48px auto;
+            padding: 24px;
+        }
+
+        .card {
+            background: #ffffff;
+            border-radius: 24px;
+            padding: 28px;
+            box-shadow: 0 20px 50px rgba(22, 48, 71, 0.12);
+        }
+
+        .tag {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 999px;
+            background: #163047;
+            color: #ffffff;
+            font-size: 14px;
+        }
+
+        h1 {
+            margin: 16px 0 8px;
+            font-size: 36px;
+        }
+
+        p {
+            line-height: 1.8;
+        }
+
+        .btn {
+            margin-top: 16px;
+            padding: 12px 18px;
+            border: 0;
+            border-radius: 14px;
+            background: #ff7a59;
+            color: #ffffff;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div id="app" class="wrap">
+        <section class="card">
+            <span class="tag">Vue 暖身頁</span>
+            <h1>{{ title }}</h1>
+            <p>{{ text }}</p>
+            <p>目前步驟：{{ step }}</p>
+            <button class="btn" @click="nextStep">下一步</button>
+        </section>
+    </div>
+
+    <script>
+        const { createApp, ref } = Vue
+
+        createApp({
+            setup() {
+                const title = ref('歡迎進入 Vue 第一頁')
+                const text = ref('這一頁只做一件事：先看到 Vue 接手畫面。')
+                const step = ref('先看資料顯示')
+
+                function nextStep() {
+                    title.value = '你已經讓 Vue 動起來了'
+                    text.value = '現在你看到的是資料改變後，畫面自動更新。'
+                    step.value = '接著請看 01-start.html'
+                }
+
+                return { title, text, step, nextStep }
+            }
+        }).mount('#app')
+    </script>
+</body>
+</html>

@@ -1,0 +1,30 @@
+[
+  {
+    "id": 1,
+    "name": "Amy",
+    "class": "A",
+    "score": 95,
+    "note": "畫面整理得很快"
+  },
+  {
+    "id": 2,
+    "name": "Ben",
+    "class": "A",
+    "score": 88,
+    "note": "事件邏輯很穩"
+  },
+  {
+    "id": 3,
+    "name": "Cody",
+    "class": "B",
+    "score": 92,
+    "note": "資料結構清楚"
+  },
+  {
+    "id": 4,
+    "name": "Dora",
+    "class": "B",
+    "score": 90,
+    "note": "動畫細節完整"
+  }
+]

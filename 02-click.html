@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>02 按鈕互動</title>
+    <script src="./vue.3.5.13.js"></script>
+    <style>
+        body {
+            margin: 0;
+            font-family: "Segoe UI", "Microsoft JhengHei", sans-serif;
+            background: linear-gradient(135deg, #f2fff4, #eef2ff);
+            color: #213547;
+        }
+
+        .box {
+            max-width: 760px;
+            margin: 48px auto;
+            padding: 28px;
+            background: #ffffff;
+            border-radius: 24px;
+            box-shadow: 0 18px 42px rgba(33, 53, 71, 0.12);
+        }
+
+        .score {
+            font-size: 48px;
+            font-weight: 800;
+            margin: 18px 0;
+        }
+
+        .btn-row {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 12px 18px;
+            border: 0;
+            border-radius: 14px;
+            color: #ffffff;
+            cursor: pointer;
+        }
+
+        .add {
+            background: #2e8b57;
+        }
+
+        .sub {
+            background: #ff7a59;
+        }
+
+        .change {
+            background: #3a67ff;
+        }
+    </style>
+</head>
+<body>
+    <div id="app" class="box">
+        <h1>{{ title }}</h1>
+        <p>{{ text }}</p>
+        <p class="score">{{ score }}</p>
+        <div class="btn-row">
+            <button class="add" @click="addScore">分數 + 1</button>
+            <button class="sub" @click="subScore">分數 - 1</button>
+            <button class="change" @click="changeText">改提示文字</button>
+        </div>
+    </div>
+
+    <script>
+        const { createApp, ref } = Vue
+
+        createApp({
+            setup() {
+                const title = ref('02 按鈕互動')
+                const text = ref('按按鈕後，只要資料改了，畫面就會跟著變。')
+                const score = ref(10)
+
+                function addScore() {
+                    score.value++
+                }
+
+                function subScore() {
+                    score.value--
+                }
+
+                function changeText() {
+                    text.value = '這就是 @click 和 ref 的基本配合。'
+                }
+
+                return { title, text, score, addScore, subScore, changeText }
+            }
+        }).mount('#app')
+    </script>
+</body>
+</html>
